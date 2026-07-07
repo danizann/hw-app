@@ -49,9 +49,13 @@ echo [5/5] Menjalankan Next.js dev server...
 echo.
 echo URL: http://localhost:3000
 start "" "http://localhost:3000"
-call npm run dev
+
+start "Hoodwood Dev Server" cmd /k "cd /d "%~dp0" && npm run dev"
 if errorlevel 1 goto :error
 
+echo [INFO] Setup selesai. Server berjalan di jendela "Hoodwood Dev Server".
+echo [INFO] Jangan tutup jendela server jika aplikasi masih dipakai.
+pause
 exit /b 0
 
 :error
