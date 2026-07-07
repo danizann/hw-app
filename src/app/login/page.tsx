@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Warehouse, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("admin@hoodwood.com");
   const [password, setPassword] = useState("admin123");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +33,8 @@ export default function LoginPage() {
       setError("Email atau password salah");
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+      router.push(callbackUrl);
     }
   };
 

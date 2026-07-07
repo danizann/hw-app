@@ -24,5 +24,6 @@ export const config = {
     "/invoices/:path*",
     "/stock/:path*",
     "/reports/:path*",
+    "/reseller/:path*",
   ],
 };

@@ -1,0 +1,4 @@
+STORE_FILE=keystore/hoodwood-upload.jks
+STORE_PASSWORD=your_store_password
+KEY_ALIAS=hoodwood_upload
+KEY_PASSWORD=your_key_password
