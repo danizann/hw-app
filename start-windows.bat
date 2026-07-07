@@ -8,21 +8,8 @@ echo Hoodwood Windows One-Click Launcher
 echo ========================================
 echo.
 
-where node >nul 2>nul
-if errorlevel 1 (
-  echo [ERROR] Node.js tidak ditemukan.
-  echo Install Node.js LTS terlebih dahulu dari https://nodejs.org
-  pause
-  exit /b 1
-)
-
-where npm >nul 2>nul
-if errorlevel 1 (
-  echo [ERROR] npm tidak ditemukan.
-  echo Pastikan instalasi Node.js sudah benar.
-  pause
-  exit /b 1
-)
+call :ensure_node
+if errorlevel 1 exit /b 1
 
 if not exist ".env" (
   if exist ".env.example" (
@@ -72,3 +59,59 @@ echo.
 echo [ERROR] Setup gagal. Periksa pesan error di atas.
 pause
 exit /b 1
+
+:ensure_node
+where node >nul 2>nul
+if errorlevel 1 (
+  echo [WARN] Node.js tidak ditemukan di PATH.
+  echo [INFO] Mencoba install Node.js LTS otomatis via winget...
+  where winget >nul 2>nul
+  if errorlevel 1 (
+    echo [ERROR] winget tidak tersedia untuk install otomatis.
+    echo Install Node.js LTS dulu dari https://nodejs.org lalu jalankan ulang script ini.
+    pause
+    exit /b 1
+  )
+
+  winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements --silent
+  if errorlevel 1 (
+    echo [ERROR] Gagal install Node.js otomatis via winget.
+    echo Silakan install Node.js LTS manual dari https://nodejs.org lalu jalankan ulang script ini.
+    pause
+    exit /b 1
+  )
+
+  call :setup_node_path
+)
+
+where node >nul 2>nul
+if errorlevel 1 (
+  echo [ERROR] Node.js masih belum terdeteksi.
+  echo Tutup terminal ini, lalu jalankan lagi start-windows.bat.
+  pause
+  exit /b 1
+)
+
+where npm >nul 2>nul
+if errorlevel 1 (
+  call :setup_node_path
+)
+
+where npm >nul 2>nul
+if errorlevel 1 (
+  echo [ERROR] npm tidak ditemukan.
+  echo Pastikan instalasi Node.js sudah benar, lalu jalankan ulang script ini.
+  pause
+  exit /b 1
+)
+
+exit /b 0
+
+:setup_node_path
+if exist "%ProgramFiles%\nodejs\node.exe" (
+  set "PATH=%ProgramFiles%\nodejs;%PATH%"
+)
+if exist "%ProgramFiles(x86)%\nodejs\node.exe" (
+  set "PATH=%ProgramFiles(x86)%\nodejs;%PATH%"
+)
+exit /b 0
