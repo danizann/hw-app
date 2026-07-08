@@ -1,12 +1,12 @@
 # Hoodwood
 
-Warehouse administration website built with Next.js App Router, TypeScript, Tailwind CSS, Prisma SQLite, and NextAuth credentials authentication.
+Warehouse administration website built with Next.js App Router, TypeScript, Tailwind CSS, Prisma ORM, and NextAuth credentials authentication.
 
 ## Features
 - Dashboard with KPI cards, charts, and recent orders
 - Supplier, seller, product, order, invoice, stock history, and reports modules
 - Protected dashboard routes with NextAuth login
-- Prisma SQLite database with seed data
+- Prisma database with seed data
 - Barcode-enabled printable invoice and order letter views
 - Bulk invoice printing workflow
 
@@ -14,7 +14,7 @@ Warehouse administration website built with Next.js App Router, TypeScript, Tail
 - Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS + shadcn/ui-style components
-- Prisma ORM + SQLite
+- Prisma ORM + PostgreSQL (production) / SQLite (local legacy)
 - NextAuth.js credentials provider
 - Recharts, react-barcode, react-to-print
 
@@ -48,6 +48,7 @@ Open http://localhost:3000 and sign in with:
 ## Scripts
 - `npm run dev` - start development server
 - `npm run build` - production build
+- `npm run netlify:build` - build for Netlify (generate Prisma client + migrate + Next.js build)
 - `npm run start` - start production server
 - `npm run lint` - run ESLint
 - `npm run cap:sync` - sync web config/assets to Android project
@@ -112,3 +113,38 @@ Catatan:
 
 ## Environment
 Copy `.env.example` to `.env` and adjust values as needed.
+
+## Deploy Gratis ke Internet (Netlify + Neon)
+
+Gunakan kombinasi ini agar website online gratis dan data tetap persisten:
+- Hosting: Netlify Free
+- Database: Neon Free (PostgreSQL)
+
+### 1) Buat database PostgreSQL gratis
+1. Buat akun di Neon dan buat project baru.
+2. Salin connection string PostgreSQL (pooled URL disarankan).
+
+### 2) Siapkan environment variables di Netlify
+Di Site settings > Environment variables, isi:
+- `DATABASE_URL` = connection string Neon
+- `NEXTAUTH_SECRET` = string acak panjang (minimal 32 karakter)
+- `NEXTAUTH_URL` = URL Netlify kamu (contoh: `https://your-site-name.netlify.app`)
+
+### 3) Connect repo ke Netlify
+1. Login Netlify.
+2. Pilih Add new site > Import an existing project.
+3. Pilih GitHub repo ini.
+4. Netlify akan membaca `netlify.toml` otomatis:
+	- Build command: `npm run netlify:build`
+
+### 4) Deploy pertama
+1. Jalankan deploy.
+2. Setelah sukses, buka URL `*.netlify.app`.
+3. Jika ingin data contoh, jalankan seed ke database production secara manual dari mesin lokal:
+```bash
+DATABASE_URL="postgresql://..." npm run db:seed
+```
+
+### Catatan penting
+- SQLite lokal tidak dipakai untuk deployment Netlify production.
+- Untuk custom domain, bisa ditambahkan di Netlify Domain management (tetap bisa di paket gratis).
